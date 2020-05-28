@@ -1,4 +1,5 @@
 import schedule as sc
+from data_src import ActivityData
 
 class User:
 
@@ -7,8 +8,55 @@ class User:
         self.username = username
         self.password = password
         self.activities_list = []
+        self.activityData = ActivityData()
+
+    def addtodo(self, title, desc, schedule, priority):
+        json_data = self.activityData.readfile()
+
+        temp = json_data[str(self.id)]
+
+        # number of todos
+        id = len(temp) + 1
+
+        # new todo is appended to todo.json
+        data_to_append = {
+
+            "id":id,
+            "title":title,
+            "description":desc,
+            "priority":priority,
+            "schedule":schedule
+        }
+
+        temp.append(data_to_append)
+
+        self.activityData.writefile(json_data)
+
+        self.activityData.__init__()
+
+        return True
+
+    def deltodo(self, id_to_remove):
+        json_data = self.activityData.readfile()
+
+        temp = json_data[str(self.id)]
+
+        i = 0
+        for todo in temp:
+            if todo["id"] == id_to_remove:
+                temp.pop(i)
+                break
+            
+            i += 1
+
+        for i in range(len(temp)):
+            temp[i]["id"] = i+1
+        
+        self.activityData.writefile(json_data)
+
     
 import datetime
+
 
 class Activity:
 

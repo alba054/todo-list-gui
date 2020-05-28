@@ -93,7 +93,6 @@ def mainapp():
     frame3.pack()
 
 def addtodo():
-    activityData = ActivityData()
 
     root2 = tk.Toplevel()
 
@@ -116,7 +115,7 @@ def addtodo():
         schedule = f'{year}-{month}-{day}'
         priority = priorityComboBox.get()
         desc = descTextArea.get(1.0, tk.END)
-        activityData.addtodo(user, title, desc, schedule, priority)
+        user.addtodo(title, desc, schedule, priority)
         
         root2.destroy()
 
@@ -245,10 +244,10 @@ def delete():
     root2 = tk.Toplevel()
 
     def getInfo():
-        index = int(idEntry.get())
         
         try:
             global root3
+            index = int(idEntry.get())
             temp = user.activities_list[index-1]
             root3 = tk.Toplevel()
 
@@ -284,11 +283,12 @@ def delete():
 
         except IndexError:
             messagebox.showerror("error", "no id")
+        except ValueError:
+            messagebox.showerror("error", "input number")
 
     def confirm():
-        activityData = ActivityData()
 
-        activityData.deltodo(user, int(idEntry.get()))
+        user.deltodo(int(idEntry.get()))
         root3.destroy()
         messagebox.showinfo("info", "success")
             

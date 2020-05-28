@@ -1,30 +1,40 @@
 import json
 from tkinter import messagebox
 
-class UserData:
+class DataSource:
 
-    def __init__(self, src="./data/user.json"):
+    def __init__(self, src):
         self.file = src
-        self.map_user = {}
-        self.readfile()
 
     def readfile(self):
         with open(self.file) as f:
             try:
                 json_data = json.load(f)
+                return json_data
             except Exception:
                 pass
+
+    def writefile(self, data):
+        with open(self.file, "w") as f:
+            json.dump(data, f)
+
+
+class UserData(DataSource):
+
+    def __init__(self, src="./data/user.json"):
+        super().__init__(src)
+        self.map_user = {}
+        self.readfile()
+
+    def readfile(self):
+        json_data = super().readfile()
         
         for user in json_data:
             self.map_user[user["username"]] = [user["password"], user["id"]]
 
-    def writefile(self, file, data):
-        with open(file, "w") as f:
-            json.dump(data, f)
 
     def checkaccount(self, username):
-        with open(self.file) as f:
-            json_data = json.load(f)
+        json_data = super().readfile()
         
         for account in json_data:
             if account["username"] == username:
@@ -34,8 +44,7 @@ class UserData:
 
     def createaccount(self, username, password):
         if not self.checkaccount(username):
-            with open(self.file) as f:
-                json_data = json.load(f)
+            json_data = super().readfile()
             
             with open('./data/todo.json') as f:
                 todo_json = json.load(f)
@@ -66,72 +75,11 @@ class UserData:
 
 
 
-from module import User
 
-class ActivityData:
+class ActivityData(DataSource):
     
     def __init__(self, src="./data/todo.json"):
-        self.file = src
+        super().__init__(src)
         self.readfile()
-
-    def writefile(self, data):
-        with open(self.file, "w") as f:
-            json.dump(data, f)
-
-    def readfile(self):
-        with open(self.file) as f:
-            try:
-                json_data = json.load(f)
-                return json_data
-            except Exception:
-                pass
-        
-    def addtodo(self, user, title, desc, schedule, priority):
-        with open(self.file) as f:
-            json_data = json.load(f)
-
-        temp = json_data[str(user.id)]
-
-        # number of todos
-        id = len(temp) + 1
-
-        # new todo is appended to todo.json
-        data_to_append = {
-
-            "id":id,
-            "title":title,
-            "description":desc,
-            "priority":priority,
-            "schedule":schedule
-        }
-
-        temp.append(data_to_append)
-
-        self.writefile(json_data)
-
-        self.__init__()
-
-        return True
-
-    def deltodo(self, user, id_to_remove):
-        with open(self.file) as f:
-            json_data = json.load(f)
-
-        temp = json_data[str(user.id)]
-
-        i = 0
-        for todo in temp:
-            if todo["id"] == id_to_remove:
-                temp.pop(i)
-                break
-            
-            i += 1
-
-        for i in range(len(temp)):
-            temp[i]["id"] = i+1
-        
-        self.writefile(json_data)
-
-        self.__init__()
 
         
